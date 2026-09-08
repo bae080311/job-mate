@@ -1,0 +1,19 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: jobmate
+      POSTGRES_PASSWORD: jobmate
+      POSTGRES_DB: jobmate
+    # 5432(eobom_postgres) 5433(ax-practice-db) 이미 점유중 → 5434
+    ports: ["5434:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jobmate"]
+      interval: 3s
+      retries: 20
+
+volumes:
+  pgdata:
