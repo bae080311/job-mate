@@ -38,6 +38,6 @@ python -m pipeline.collect --source saramin --pages 3
 
 ## 다음
 
-- [ ] 2단계 `pipeline/enrich.py` — 병무청 조인, `mma_designated` 채우기
+- [ ] 2단계 `pipeline/enrich.py` — 병무청 조인, `mma_status` 판정 (오탐 0건 · 애매하면 unknown)
 - [ ] 3단계 `pipeline/index.py` + `app/` — RAG
 - [ ] 4단계 `evals/` + Langfuse — LLMOps

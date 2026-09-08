@@ -10,7 +10,12 @@ CREATE TABLE IF NOT EXISTS jobs (
   region         text,
   edu_min        text,                     -- 원문 학력조건. hs_ok 판정 근거를 남긴다
   hs_ok          boolean NOT NULL,
-  mma_designated boolean NOT NULL DEFAULT false,  -- 2단계 enrich.py 가 채움
+  -- 병역지정업체 판정. boolean 이면 '지정업체 아님'과 '확인 못 함'이 같은 값이 되는데,
+  -- 이 둘은 사용자에게 완전히 다른 의미다. 오탐 = 없는 병역특례를 있다고 표시 =
+  -- 고졸 학생이 진로를 걸고 지원 → 오탐 0건이 목표, 애매하면 unknown 으로 남긴다.
+  mma_status     text NOT NULL DEFAULT 'unknown'
+                 CHECK (mma_status IN ('designated', 'not_listed', 'unknown')),
+  mma_matched_by text CHECK (mma_matched_by IN ('biz_no', 'name')),  -- 판정 근거
   salary         text,
   url            text NOT NULL,
   posted_at      timestamptz,
@@ -26,7 +31,8 @@ CREATE INDEX IF NOT EXISTS jobs_hs_open_idx ON jobs (hs_ok, closes_at);
 CREATE TABLE IF NOT EXISTS mma_companies (
   biz_no text PRIMARY KEY,
   name   text NOT NULL,
-  kind   text
+  kind   text,
+  as_of  date NOT NULL   -- 지정은 매년 바뀌고 취소된다. 기준일 없으면 낡은 명단인지 알 수 없음
 );
 
 -- 3단계에서 채움
